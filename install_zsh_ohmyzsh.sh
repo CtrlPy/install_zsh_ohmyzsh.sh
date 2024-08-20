@@ -3,13 +3,14 @@
 # Install Zsh
 sudo apt update && sudo apt install -y zsh
 
-# Change the default shell to Zsh
-chsh -s $(which zsh)
+# Set Zsh as the default shell
+chsh -s $(which zsh) $USER
 
-# Check if .zshrc exists, if not create a basic one
+# Initialize Zsh for the first time to create the necessary configuration files
 if [ ! -f ~/.zshrc ]; then
+    echo "Initializing Zsh for the first time..."
     touch ~/.zshrc
-    echo "# .zshrc created by install script" >> ~/.zshrc
+    /usr/bin/zsh -c "source ~/.zshrc"
 fi
 
 # Install Oh-My-Zsh
