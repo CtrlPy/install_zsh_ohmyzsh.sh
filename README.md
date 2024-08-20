@@ -17,10 +17,14 @@ This repository contains a shell script that automates the installation of Zsh, 
 To install everything in one go, execute the following command in your terminal:
 
 ```zsh
-sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/CtrlPy/install_zsh_ohmyzsh.sh/main/install_zsh_ohmyzsh.sh)"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/CtrlPy/install_zsh_ohmyzsh.sh/main/install_zsh_ohmyzsh.sh)"
 
 ```
 
+
+```zsh
+exec zsh
+```
 
 This command will automatically install Zsh, Oh-My-Zsh, the Powerlevel10k theme, and the selected plugins.
 
