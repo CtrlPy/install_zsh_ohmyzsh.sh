@@ -6,6 +6,12 @@ sudo apt update && sudo apt install -y zsh
 # Change the default shell to Zsh
 chsh -s $(which zsh)
 
+# Check if .zshrc exists, if not create a basic one
+if [ ! -f ~/.zshrc ]; then
+    touch ~/.zshrc
+    echo "# .zshrc created by install script" >> ~/.zshrc
+fi
+
 # Install Oh-My-Zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
@@ -36,7 +42,7 @@ if ! grep -q "zsh-autosuggestions" ~/.zshrc; then
     sed -i 's/plugins=(.*)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-completions)/' ~/.zshrc
 fi
 
-# Apply changes
+# Source the .zshrc to apply changes
 source ~/.zshrc
 
 # Restart Zsh to apply changes
