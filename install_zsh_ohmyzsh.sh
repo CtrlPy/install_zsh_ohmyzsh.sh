@@ -6,8 +6,28 @@ if [ "$EUID" -eq 0 ]; then
   exit
 fi
 
-# Install Zsh without user interaction
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y zsh
+# Function to install Zsh based on the detected OS
+install_zsh() {
+    if [ -f /etc/debian_version ]; then
+        # Debian/Ubuntu
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y zsh
+    elif [ -f /etc/arch-release ]; then
+        # Arch Linux
+        sudo pacman -Syu --noconfirm zsh
+    elif [ -f /etc/redhat-release ]; then
+        # RedHat/CentOS/Fedora
+        sudo yum install -y zsh
+    elif [ "$(uname)" == "Darwin" ]; then
+        # macOS
+        brew install zsh
+    else
+        echo "Unsupported OS. Please install Zsh manually."
+        exit 1
+    fi
+}
+
+# Install Zsh
+install_zsh
 
 # Install Oh My Zsh for the current user
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" --unattended
@@ -19,12 +39,12 @@ git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 
-# Set Powerlevel10k as the default theme and enable plugins in .zshrc
+# Modify .zshrc to set Powerlevel10k as the default theme and enable plugins
 sed -i "s/ZSH_THEME=\".*\"/ZSH_THEME=\"powerlevel10k\/powerlevel10k\"/g" ~/.zshrc
 sed -i "s/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/" ~/.zshrc
 
 # Source the .zshrc to apply the changes
-. ~/.zshrc
+source ~/.zshrc
 
 # Attempt to change default shell to Zsh for the current user
 echo "Attempting to change default shell to Zsh..."
@@ -34,6 +54,5 @@ else
     echo "Failed to change shell. Please change your shell manually using 'chsh -s $(which zsh)' and entering your password."
 fi
 
-
-# Automatically switch to Zsh
-exec zsh
+# Prompt the user to start a new Zsh session
+echo "Installation complete. Please start a new terminal session to use Zsh."
