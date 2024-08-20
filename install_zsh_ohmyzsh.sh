@@ -58,9 +58,6 @@ else
     exit 1
 fi
 
-# Source the .zshrc to apply the changes
-source ~/.zshrc
-
 # Attempt to change default shell to Zsh for the current user
 echo "Attempting to change default shell to Zsh..."
 if chsh -s $(which zsh); then
@@ -69,6 +66,6 @@ else
     echo "Failed to change shell. Please change your shell manually using 'chsh -s $(which zsh)' and entering your password."
 fi
 
-# Prompt the user to start a new Zsh session
-echo "Installation complete. Starting Powerlevel10k configuration..."
-exec zsh -c 'p10k configure'
+# Start a new Zsh session and run Powerlevel10k configuration
+echo "Starting Zsh and launching Powerlevel10k configuration..."
+exec zsh -i -c 'p10k configure'
