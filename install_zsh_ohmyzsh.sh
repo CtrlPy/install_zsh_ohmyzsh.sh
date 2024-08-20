@@ -3,48 +3,39 @@
 # Install Zsh without user interaction
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y zsh
 
-# Set Zsh as the default shell
-chsh -s $(which zsh) $USER
-
-# Initialize Zsh for the first time to create the necessary configuration files
-if [ ! -f ~/.zshrc ]; then
-    echo "Initializing Zsh for the first time..."
-    touch ~/.zshrc
-    /usr/bin/zsh -c "source ~/.zshrc"
-fi
-
-# Install Oh-My-Zsh
+# Install Oh My Zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 # Install Powerlevel10k theme
-ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
-if [ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ]; then
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/themes/powerlevel10k
-fi
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 
-# Apply the theme to .zshrc
-sed -i 's/ZSH_THEME=".*"/ZSH_THEME="powerlevel10k\/powerlevel10k"/' ~/.zshrc
+# Install plugins: zsh-autosuggestions and zsh-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 
-# Install essential plugins
-if [ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]; then
-    git clone https://github.com/zsh-users/zsh-autosuggestions $ZSH_CUSTOM/plugins/zsh-autosuggestions
-fi
-
-if [ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
-fi
-
-if [ ! -d "$ZSH_CUSTOM/plugins/zsh-completions" ]; then
-    git clone https://github.com/zsh-users/zsh-completions $ZSH_CUSTOM/plugins/zsh-completions
+# Set Powerlevel10k as the default theme and enable plugins in .zshrc
+if [ ! -f ~/.zshrc ]; then
+    cp ~/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc
+    sed -i "s/ZSH_THEME=\"robbyrussell\"/ZSH_THEME=\"powerlevel10k\/powerlevel10k\"/g" ~/.zshrc
+else
+    sed -i "s/ZSH_THEME=\".*\"/ZSH_THEME=\"powerlevel10k\/powerlevel10k\"/g" ~/.zshrc
 fi
 
 # Add plugins to .zshrc
-if ! grep -q "zsh-autosuggestions" ~/.zshrc; then
-    sed -i 's/plugins=(.*)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-completions)/' ~/.zshrc
+sed -i "s/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/" ~/.zshrc
+
+# Source the .zshrc to apply the changes
+echo 'source ~/.zshrc' >> ~/.zshrc
+
+# Change default shell to Zsh
+chsh -s $(which zsh) $USER
+
+# Ensure Zsh is set as the default shell
+echo "SHELL is set to $SHELL"
+if [ "$SHELL" != "$(which zsh)" ]; then
+    echo "Changing default shell to zsh"
+    chsh -s $(which zsh)
 fi
 
-# Source the .zshrc to apply changes
-source ~/.zshrc
-
-# Restart Zsh to apply changes
-exec zsh
+# Prompt user to restart the terminal
+echo "Installation complete. Please restart your terminal."
