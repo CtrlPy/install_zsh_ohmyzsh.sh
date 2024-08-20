@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Install Zsh
-sudo apt update && sudo apt install -y zsh
+# Install Zsh without user interaction
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y zsh
 
 # Set Zsh as the default shell
 chsh -s $(which zsh) $USER
