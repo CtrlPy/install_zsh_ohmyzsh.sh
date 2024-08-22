@@ -10,7 +10,8 @@ fi
 install_zsh() {
     if [ -f /etc/debian_version ]; then
         # Debian/Ubuntu
-        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y zsh
+        sudo apt update -y
+        sudo apt install -y zsh
     elif [ -f /etc/arch-release ]; then
         # Arch Linux
         sudo pacman -Syu --noconfirm zsh
@@ -30,42 +31,23 @@ install_zsh() {
 install_zsh
 
 # Install Oh My Zsh for the current user
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" --unattended
+yes | sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
-# Wait for Oh My Zsh installation to complete
-sleep 5
+# Install additional plugins and theme
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k
+git clone https://github.com/asdf-vm/asdf.git ~/.asdf
 
-# Install Powerlevel10k theme
-if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" ]; then
-  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
-fi
+# Update .zshrc with the new theme and plugins
+sed -i -e 's/ZSH_THEME="robbyrussell"/ZSH_THEME="powerlevel10k\/powerlevel10k"/g' ~/.zshrc
+sed -i -e 's/plugins=(git)/plugins=(git zsh-syntax-highlighting zsh-autosuggestions aws asdf)/g' ~/.zshrc
 
-# Install plugins: zsh-autosuggestions and zsh-syntax-highlighting
-if [ ! -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" ]; then
-  git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-fi
+# Disable the Powerlevel10k configuration wizard
+grep -qxF 'POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true' ~/.zshrc || echo 'POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true' >> ~/.zshrc
 
-if [ ! -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting" ]; then
-  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-fi
+# Change default shell to Zsh for the current user
+sudo chsh -s $(which zsh) $USER
 
-# Ensure the .zshrc file is ready before making changes
-if [ -f ~/.zshrc ]; then
-    # Enable plugins in .zshrc
-    sed -i "s/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/" ~/.zshrc
-else
-    echo ".zshrc file not found. Please check the installation process."
-    exit 1
-fi
-
-# Attempt to change default shell to Zsh for the current user
-echo "Attempting to change default shell to Zsh..."
-if chsh -s $(which zsh); then
-    echo "Shell changed successfully!"
-else
-    echo "Failed to change shell. Please change your shell manually using 'chsh -s $(which zsh)' and entering your password."
-fi
-
-# Start a new Zsh session and run Powerlevel10k configuration
-echo "Starting Zsh and launching Powerlevel10k configuration..."
-exec zsh -i -c 'p10k configure'
+# Automatically switch to Zsh
+exec zsh
