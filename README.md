@@ -21,9 +21,9 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/CtrlPy/install_zsh_ohmyzsh
 
 ```
 
-
+## setting theme
 ```zsh
-exec zsh
+p10k configure
 ```
 
 This command will automatically install Zsh, Oh-My-Zsh, the Powerlevel10k theme, and the selected plugins.
