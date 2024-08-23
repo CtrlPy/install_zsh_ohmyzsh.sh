@@ -44,7 +44,7 @@ sed -i -e 's/ZSH_THEME="robbyrussell"/ZSH_THEME="powerlevel10k\/powerlevel10k"/g
 sed -i -e 's/plugins=(git)/plugins=(git zsh-syntax-highlighting zsh-autosuggestions aws asdf)/g' ~/.zshrc
 
 # Disable the Powerlevel10k configuration wizard
-grep -qxF 'POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true' ~/.zshrc || echo 'POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true' >> ~/.zshrc
+# grep -qxF 'POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true' ~/.zshrc || echo 'POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true' >> ~/.zshrc
 
 # Change default shell to Zsh for the current user
 sudo chsh -s $(which zsh) $USER
